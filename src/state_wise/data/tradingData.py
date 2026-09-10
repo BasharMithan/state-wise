@@ -27,7 +27,7 @@ from abc import ABC, abstractmethod
 from collections.abc import AsyncIterator
 from datetime import datetime
 
-from models.schemas import MarketObservation 
+from models.schemas import Candle 
 
 
 class TradingSource(ABC):
@@ -35,7 +35,7 @@ class TradingSource(ABC):
     Abstract base class every market data provider must implement.
 
     A TradingSource is responsible only for getting normalized market
-    data (MarketObservation) into StateWise, live streaming and
+    data (Candle) into StateWise, live streaming and
     historical backfill. It has no knowledge of features, models, risk,
     or execution; those are separate concerns downstream.
     """
@@ -61,9 +61,9 @@ class TradingSource(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def stream(self, symbols: list[str], interval: str) -> AsyncIterator[MarketObservation]:
+    def stream(self, symbols: list[str], interval: str) -> AsyncIterator[Candle]:
         """
-        Yields MarketObservation objects as new data arrives, live.
+        Yields Candle objects as new data arrives, live.
 
         Implementations are responsible for their own reconnection
         logic -- a caller iterating this stream should not need to
@@ -78,9 +78,9 @@ class TradingSource(ABC):
         interval: str,
         start: datetime,
         end: datetime | None = None,
-    ) -> list[MarketObservation]:
+    ) -> list[Candle]:
         """
-        Fetches historical MarketObservation data for backtesting and
+        Fetches historical Candle data for backtesting and
         model calibration. Must return data in the same shape stream()
         produces, so backtest and live code paths are identical from
         this point downstream.
